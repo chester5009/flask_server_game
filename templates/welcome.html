@@ -3,28 +3,54 @@
     <div class="jumbo">
         <h1 id="head">ВТОРАЯ страница СУКА</h1>
         <br>
+        <input type="text" id="nick">
+        <input type="button" id="ok" value="press">
+        <br>
         <p id="answer"></p>
         <script type="text/javascript" src="//code.jquery.com/jquery-2.1.3.min.js"></script>
         <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
         <script type="text/javascript" charset="utf-8">
-            console.log("JS!");
-            var socket=io.connect('http://'+document.domain+':'+location.port);
+
+            var socket=io('http://'+document.domain+':'+location.port);
             socket.on('connect',function () {
-                socket.emit('my event',{data:'HERE STORM SPIRIT'});
+
+            });
+            window.onunload = function()
+            {
+                socket.disconnect()
+                return confirm('Вы хотите покинуть сайт?')
+            }
+            window.onbeforeunload = function(){
+                socket.disconnect()
+                return confirm('Точно хотите выйти?');
+            }
+            socket.on('users_list',function (data) {
+                var list=JSON.parse(data);
+                console.log(list);
+                $("#answer").html('Пользователей в сети '+list['number']);
             });
 
-            socket.on('answer',function (data) {
-                console.log('DATA '+data)
-                //$("#answer").html('Пользователей в сети '+data);
+
+
+            $('#ok').click(function () {
+                var nick=$('#nick').val();
+                sendInfo(socket,nick);
+
             });
-            socket.on('user_nubmers',function (data) {
-                console.log('DATA '+data)
-                $("#answer").html('Пользователей в сети '+data);
-            });
+
+
+
+            function sendInfo(socket,nick) {
+                socket.emit('info',JSON.stringify({name:nick}));
+
+            }
+            function getUsers(socket){
+                socket.emit('get_users','');
+
+            }
             setInterval(function () {
-                socket.emit('get_user_number','');
-
-            },5000);
+                getUsers(socket);
+            },500);
         </script>
     </div>
 

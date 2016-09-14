@@ -2,6 +2,7 @@ from flask import Flask,render_template,request
 from flask_socketio import SocketIO, emit ,send
 from usersinfo import Users
 from user import User
+import json
 u=Users()
 users=[]
 
@@ -24,31 +25,28 @@ def welcome():
 
 @socketio.on('connect',namespace='/')
 def connected():
-    newuser=User(request.namespace.socket.sessid,'f')
-    users.append(newuser)
-    u.n = len(users)
-    print "CONNECTED "+newuser.id
 
-'''
+    print "CONNECTED "
+
 @socketio.on('disconnect',namespace='/')
-def disconnected():
-    u.decr()
-    print "DISCONNECTED "
-'''
+def disconnect():
+    print "DISconnected"
 
 
-@socketio.on('my event')
-def handle_my_event(data):
-    print 'DATA:'
 
-    emit('answer',u.n)
-    return 1
+@socketio.on('info')
+def handle_info(data):
+    print 'LINKED! '
+    info=json.loads(data)
+    newuser=User(info['name'])
+    users.append(newuser)
+    print len(users)
 
 
-@socketio.on('get_user_number')
-def  handle_get_user_number(data):
-    emit('user_nubmers',u.n)
-
+@socketio.on('get_users')
+def  handle_get_users(data):
+    emit('users_list',json.dumps({'number':len(getUsersNamesList()),'list':getUsersNamesList()}))
+    print 'GETTED '
 
 def send_user_info():
 
@@ -59,7 +57,10 @@ def error_handler(e):
     pass
 
 
-
-
+def getUsersNamesList():
+    list=[]
+    for u in users:
+        list.append(u.name)
+    return list
 if __name__ == '__main__':
     socketio.run(app,host='192.168.1.3',port='9090')
