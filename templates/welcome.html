@@ -12,16 +12,22 @@
         <script type="text/javascript" charset="utf-8">
 
             var socket=io('http://'+document.domain+':'+location.port);
+            var my_id;
+            var lastTime=0;
             socket.on('connect',function () {
 
             });
             window.onunload = function()
             {
-                socket.disconnect()
+                //socket.disconnect();
+                alert('disconnect');
+                socket.emit('mydisconnect',JSON.stringify({id:my_id}));
                 return confirm('Вы хотите покинуть сайт?')
             }
             window.onbeforeunload = function(){
-                socket.disconnect()
+                //socket.disconnect();
+                alert('disconnect');
+                socket.emit('mydisconnect',JSON.stringify({id:my_id}));
                 return confirm('Точно хотите выйти?');
             }
             socket.on('users_list',function (data) {
@@ -30,7 +36,15 @@
                 $("#answer").html('Пользователей в сети '+list['number']);
             });
 
+            socket.on('my_id',function (data) {
+                var json=JSON.parse(data);
+                my_id=json['id'];
+                $('#head').append(' id: '+my_id);
+            });
 
+            socket.on('go_disconnect',function (data) {
+                socket.disconnect();
+            });
 
             $('#ok').click(function () {
                 var nick=$('#nick').val();
@@ -48,9 +62,26 @@
                 socket.emit('get_users','');
 
             }
+            function imHere(socket) {
+                lastTime=Date.now();
+                socket.emit('i_am_here',JSON.stringify({id:my_id,time:lastTime}));
+            }
+            var timerPinger=0;
+            var timerGetUsers=0;
             setInterval(function () {
-                getUsers(socket);
-            },500);
+                timerPinger+=1;
+                timerGetUsers+=1;
+                if(timerGetUsers>400){
+                    console.log('getUSERs');
+                    getUsers(socket);
+                    timerGetUsers=0;
+                }
+                if(timerPinger>200){
+                    console.log('ping!');
+                    imHere(socket);
+                    timerPinger=0;
+                }
+            },10);
         </script>
     </div>
 
