@@ -15,12 +15,7 @@ app.config['SECRET_KEY']='secret!'
 socketio=SocketIO(app)
 
 
-
 @app.route('/')
-def index():
-    return render_template('auth.html')
-
-@app.route('/welcome')
 def welcome():
     return render_template('welcome.html')
 
@@ -41,7 +36,7 @@ def handle_info(data):
     print 'LINKED! '
     info=json.loads(data)
     newid=random.randint(1,99999999)
-    newuser=User(info['name'],newid,1,True)
+    newuser=User(info['name']+str(newid),newid,1,True)
     users.append(newuser)
     emit('my_id',json.dumps({'id':newid}))
     print len(users)

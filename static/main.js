@@ -7,6 +7,12 @@ var lastTime=0;
 
 var timerPinger=0;
 var timerGetUsers=0;
+
+var canvas,ctx;
+var game=null;
+
+var list;
+var usersWait=0;
 socket.on('connect',function () {
 
 });
@@ -25,10 +31,10 @@ window.onbeforeunload = function(){
 }
 
 $(document).ready(function () {
-    $('#content').hide();
+
     socket.on('users_list',function (data) {
 
-        var list=JSON.parse(data);
+        list=JSON.parse(data);
         console.log(list);
         var names=list['list'];
         var content='';
@@ -55,14 +61,10 @@ $(document).ready(function () {
     socket.on('go_disconnect',function (data) {
         socket.disconnect();
     });
+    nick='u'
+    sendInfo(socket,nick);
 
-    $('#ok').click(function () {
-        var nick=$('#nick').val();
-        sendInfo(socket,nick);
-        $('#content').show();
-        $('#enter').hide();
-    });
-
+    gameInit();
     update();
 });
 
@@ -77,9 +79,22 @@ function getUsers(socket){
     socket.emit('get_users','');
 
 }
+
+function getUsersOnlineInfo(socket){
+    socket.emit('get_online_info','');
+}
+
 function imHere(socket) {
     lastTime=Date.now();
     socket.emit('i_am_here',JSON.stringify({id:my_id,time:lastTime}));
+}
+
+
+
+function gameInit(){
+    canvas=document.querySelector('#canvas');
+    ctx=canvas.getContext('2d');
+    game=new Game(ctx,canvas.width,canvas.height);
 }
 
 
@@ -97,6 +112,10 @@ function update() {
         timerPinger=0;
     }
 
+    if(game!=null && list!=null){
+        game.render();
+        game.update(list['number'],usersWait,my_id);
+    }
     requestAnimationFrame(update);
 }
 
