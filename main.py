@@ -97,7 +97,8 @@ def getUsersNamesList():
 
 def changeLastTime(id,newTime):
     for i in range(len(users)):
-        users[i].lastTime= newTime
+        if(users[i].id==id):
+            users[i].lastTime= newTime
 
 def isDisconnect():
     for u in users:
@@ -120,6 +121,6 @@ if __name__ == '__main__':
     import thread, time
     thread.start_new_thread(lambda: socketio.run(app,host='192.168.1.3',port='9090'), ())
     while True:
-        time.sleep(5)
+        time.sleep(15)
         isDisconnect()
         deleteLeftUsers()
