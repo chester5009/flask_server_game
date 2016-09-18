@@ -61,10 +61,20 @@ $(document).ready(function () {
     socket.on('go_disconnect',function (data) {
         socket.disconnect();
     });
+
+    socket.on('change_state',function (data) {
+        obj=JSON.parse(data);
+        game.gameState=data['state'];
+
+    });
+
+    socket.on('get_state',function (data) {
+        obj=JSON.parse(data);
+        game.gameState=data['state'];
+    });
     nick='u'
     sendInfo(socket,nick);
-
-    gameInit();
+    gameInit(socket);
     update();
 });
 
@@ -88,13 +98,24 @@ function imHere(socket) {
     lastTime=Date.now();
     socket.emit('i_am_here',JSON.stringify({id:my_id,time:lastTime}));
 }
+function changeState(socket) {
+    socket.emit('change_state',JSON.stringify({id:my_id,state:2}))
+}
+function getState(socket) {
+    socket.emit('get_state',JSON.stringify({id:my_id}))
+}
 
-
-
-function gameInit(){
+function gameInit(socket){
     canvas=document.querySelector('#canvas');
     ctx=canvas.getContext('2d');
     game=new Game(ctx,canvas.width,canvas.height);
+
+    $('#canvas').click(function (e) {
+        if(game.gameState==0){
+
+            changeState(socket);
+        }
+    });
 }
 
 
@@ -110,11 +131,13 @@ function update() {
         console.log('ping!');
         imHere(socket);
         timerPinger=0;
+
     }
 
     if(game!=null && list!=null){
         game.render();
         game.update(list['number'],usersWait,my_id);
+
     }
     requestAnimationFrame(update);
 }

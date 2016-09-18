@@ -1,13 +1,16 @@
 from flask import Flask,render_template,request,session
 from flask_socketio import SocketIO, emit ,send,disconnect
-from usersinfo import Users
 from user import User
+from multiprocessing import Process
+from game import Game
+import ssl
 import time
 import random
 import json
-u=Users()
-users=[]
+import uuid
 
+users=[]
+games=[]
 
 
 app=Flask(__name__)
@@ -64,6 +67,26 @@ def handle_i_am_here(data):
 
     print 'PINGED '+str(uid)+' '+str(ltime)
 
+
+@socketio.on('change_state')
+def handle_change_state(data):
+    obj=json.loads(data);
+    uid = obj['id']
+    newstatus=obj['state']
+    user=getUserById(uid)
+    index=users.index(user)
+    users[index].status=1
+    #emit('change_state',json.dumps({'state':newstatus}))
+    print 'State changed!!!!!'
+
+@socketio.on('get_state')
+def handle_change_state(data):
+    obj=json.loads(data)
+    uid = obj['id']
+    user=getUserById(uid)
+    emit('get_state',json.dumps({'state':user.status}))
+
+
 @socketio.on('mydisconnect')
 def handle_mydisconnect(data):
 
@@ -112,10 +135,59 @@ def getUserById(id):
             return u
     return False
 
-if __name__ == '__main__':
-    import thread, time
-    thread.start_new_thread(lambda: socketio.run(app,host='192.168.1.3',port='9090'), ())
+
+'''GAME'''
+
+def searcher():
     while True:
-        time.sleep(15)
+        ids=[]
+        indexes=[]
+        users_searching=0
+        users_stay=0
+        users_ingame=0
+
+
+        for i in range(len(users)):
+
+            if users[i].status==0:
+                users_stay+=1
+            elif users[i].status==1:
+                users_searching+=1
+            elif users[i].status == 2:
+                users_ingame+=1
+
+            if(len(ids)<3):
+                if users[i].status==1:
+                    ids.append(users[i].id)
+                    indexes.append(i)
+        print 'SEARCHING: ' + str(users_searching) + ' StAY: ' + str(users_stay)+' InGAME: '+str(users_ingame)
+        print 'ALL: '+str(len(users))
+        if len(ids)==2:
+            users[indexes[0]].status=2
+            users[indexes[1]].status=2
+        time.sleep(1)
+
+def deleter():
+    while True:
         isDisconnect()
         deleteLeftUsers()
+        print 'DELETER WORK'
+        time.sleep(8)
+
+if __name__ == '__main__':
+    import thread, time,threading
+
+    context = ('cert.crt', 'key.key')
+
+    thread.start_new_thread(lambda: socketio.run(app,host='192.168.1.3',port='9090'), ())
+
+    sThread=threading.Thread(target=searcher)
+    deleteThread = threading.Thread(target=deleter)
+
+    deleteThread.start()
+    sThread.start()
+
+    deleteThread.join()
+    sThread.join()
+
+
