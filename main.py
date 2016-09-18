@@ -72,19 +72,22 @@ def handle_i_am_here(data):
 def handle_change_state(data):
     obj=json.loads(data);
     uid = obj['id']
-    newstatus=obj['state']
-    user=getUserById(uid)
-    index=users.index(user)
-    users[index].status=1
-    #emit('change_state',json.dumps({'state':newstatus}))
+    newstatus=int(obj['state'])
+    for u in users:
+        if u.id==uid:
+            u.status=newstatus
+    emit('change_state',json.dumps({'state':newstatus}))
     print 'State changed!!!!!'
 
 @socketio.on('get_state')
 def handle_change_state(data):
     obj=json.loads(data)
     uid = obj['id']
-    user=getUserById(uid)
-    emit('get_state',json.dumps({'state':user.status}))
+
+    for u in users:
+        if u.id==uid:
+            status=u.status
+    emit('get_state',json.dumps({'state':status}))
 
 
 @socketio.on('mydisconnect')

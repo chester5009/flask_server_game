@@ -64,13 +64,13 @@ $(document).ready(function () {
 
     socket.on('change_state',function (data) {
         obj=JSON.parse(data);
-        game.gameState=data['state'];
+        game.gameState=1;
 
     });
 
     socket.on('get_state',function (data) {
         obj=JSON.parse(data);
-        game.gameState=data['state'];
+        game.gameState=obj['state'];
     });
     nick='u'
     sendInfo(socket,nick);
@@ -98,8 +98,8 @@ function imHere(socket) {
     lastTime=Date.now();
     socket.emit('i_am_here',JSON.stringify({id:my_id,time:lastTime}));
 }
-function changeState(socket) {
-    socket.emit('change_state',JSON.stringify({id:my_id,state:2}))
+function changeState(socket,newstate) {
+    socket.emit('change_state',JSON.stringify({id:my_id,state:newstate}))
 }
 function getState(socket) {
     socket.emit('get_state',JSON.stringify({id:my_id}))
@@ -113,7 +113,7 @@ function gameInit(socket){
     $('#canvas').click(function (e) {
         if(game.gameState==0){
 
-            changeState(socket);
+            changeState(socket,1);
         }
     });
 }
@@ -131,12 +131,14 @@ function update() {
         console.log('ping!');
         imHere(socket);
         timerPinger=0;
-
     }
 
     if(game!=null && list!=null){
         game.render();
         game.update(list['number'],usersWait,my_id);
+        if(game.gameState==1){
+            getState(socket);
+        }
 
     }
     requestAnimationFrame(update);
