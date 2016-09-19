@@ -78,10 +78,10 @@ $(document).ready(function () {
 
     socket.on('get_game',function (data) {
         obj=JSON.parse(data);
-        g=obj['game'];
+        id=obj['id'];
 
-        game.setId(g);
-        console.log('GAME GET: '+JSON.stringify(obj['player1']));
+        game.setId(id);
+        console.log('GAME GET: '+JSON.stringify(obj['id']));
     });
 
     nick='u'
