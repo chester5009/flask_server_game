@@ -1,6 +1,7 @@
 from flask import Flask,render_template,request,session
 from flask_socketio import SocketIO, emit ,send,disconnect
 from user import User
+from game import Game
 from multiprocessing import Process
 from game import Game
 import ssl
@@ -38,7 +39,7 @@ def disconnect():
 def handle_info(data):
     print 'LINKED! '
     info=json.loads(data)
-    newid=random.randint(1,99999999)
+    newid=uuid.uuid4().hex[:8]
     newuser=User(info['name']+str(newid),newid,1,True)
     users.append(newuser)
     emit('my_id',json.dumps({'id':newid}))
@@ -89,6 +90,15 @@ def handle_change_state(data):
             status=u.status
     emit('get_state',json.dumps({'state':status}))
 
+@socketio.on('get_game')
+def handle_get_game(data):
+    obj=json.loads(data)
+    uid=obj['id']
+    game = getGameByUser(uid)
+
+    emit('get_game', json.dumps({'id':game.id,'player1':json.dumps(game.players[0].__dict__),'player2':json.dumps(game.players[1].__dict__)}))
+
+
 
 @socketio.on('mydisconnect')
 def handle_mydisconnect(data):
@@ -100,9 +110,7 @@ def handle_mydisconnect(data):
         if(i.id==userid):
             users.pop(i)
 
-def send_user_info():
 
-    pass
 
 @socketio.on_error()        # Handles the default namespace
 def error_handler(e):
@@ -141,6 +149,19 @@ def getUserById(id):
 
 '''GAME'''
 
+def getGameByUser(uid):
+    for game in games:
+        for u in game.players:
+             if u.id==uid:
+                 return game
+    return 'no id'
+
+def createNewGame(id1,id2):
+    gameid=uuid.uuid4().hex
+    new_game=Game(id1,id2,gameid)
+    games.append(new_game)
+
+
 def searcher():
     while True:
         ids=[]
@@ -168,6 +189,7 @@ def searcher():
         if len(ids)==2:
             users[indexes[0]].status=2
             users[indexes[1]].status=2
+            createNewGame(users[indexes[0]].id,users[indexes[1]].id)
         time.sleep(1)
 
 def deleter():

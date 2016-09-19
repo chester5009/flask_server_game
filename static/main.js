@@ -7,12 +7,15 @@ var lastTime=0;
 
 var timerPinger=0;
 var timerGetUsers=0;
+var gameTimer=0;
 
 var canvas,ctx;
 var game=null;
 
 var list;
 var usersWait=0;
+
+var gameId=null;
 socket.on('connect',function () {
 
 });
@@ -72,6 +75,15 @@ $(document).ready(function () {
         obj=JSON.parse(data);
         game.gameState=obj['state'];
     });
+
+    socket.on('get_game',function (data) {
+        obj=JSON.parse(data);
+        g=obj['game'];
+
+        game.setId(g);
+        console.log('GAME GET: '+JSON.stringify(obj['player1']));
+    });
+
     nick='u'
     sendInfo(socket,nick);
     gameInit(socket);
@@ -104,6 +116,9 @@ function changeState(socket,newstate) {
 function getState(socket) {
     socket.emit('get_state',JSON.stringify({id:my_id}))
 }
+function getGame(socket) {
+    socket.emit('get_game',JSON.stringify({id:my_id}));
+}
 
 function gameInit(socket){
     canvas=document.querySelector('#canvas');
@@ -123,15 +138,16 @@ function update() {
     timerPinger+=1;
     timerGetUsers+=1;
     if(timerGetUsers>50){
-        console.log('getUSERs');
+        //console.log('getUSERs');
         getUsers(socket);
         timerGetUsers=0;
     }
     if(timerPinger>10){
-        console.log('ping!');
+        //console.log('ping!');
         imHere(socket);
         timerPinger=0;
     }
+
 
     if(game!=null && list!=null){
         game.render();
@@ -139,6 +155,14 @@ function update() {
         if(game.gameState==1){
             getState(socket);
         }
+        if(game.gameState==2){
+            if(gameTimer>2){
+                getGame(socket);
+                gameTimer=0;
+            }
+            gameTimer+=1;
+        }
+
 
     }
     requestAnimationFrame(update);

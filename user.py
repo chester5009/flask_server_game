@@ -5,7 +5,7 @@ class User():
         self.name=name
         self.lastTime=lastTime
         self.isEnable=isEnable
-        self.status=0 # 0-stay 1-search 2-  in game
+        self.status=0 # 0-stay 1-search 2-  in id
     pass
 
 
