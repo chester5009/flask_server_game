@@ -98,7 +98,10 @@ def handle_get_game(data):
 
     emit('get_game', json.dumps({'id':game.id,'player1':json.dumps(game.players[0].__dict__),'player2':json.dumps(game.players[1].__dict__)}))
 
-
+@socketio.on('handle')
+def handle_handle(data):
+    obj=json.loads(data);
+    key_action(obj['id'],obj['game_id'],obj['code'],obj['value'])
 
 @socketio.on('mydisconnect')
 def handle_mydisconnect(data):
@@ -161,6 +164,13 @@ def createNewGame(id1,id2):
     new_game=Game(id1,id2,gameid)
     games.append(new_game)
 
+def key_action(id_player,id_game,code,value):
+    for game in games:
+        if game.id==id_game:
+            for p in game.players:
+                if p.id==id_player:
+                    p.keys[code]=value
+
 
 def searcher():
     while True:
@@ -203,7 +213,7 @@ def gamesUpdater():
     while True:
         for game in games:
             game.run()
-            time.sleep(0.033)
+            time.sleep(0.016)
 
 if __name__ == '__main__':
     import thread, time,threading

@@ -86,7 +86,7 @@ $(document).ready(function () {
         game.refreshPlayers(obj_pl1['id'],obj_pl1['hp'],obj_pl1['x'],obj_pl1['y'],
         obj_pl2['id'],obj_pl2['hp'],obj_pl2['x'],obj_pl2['y']);
         //(id1,hp1,x1,y1,id2,hp2,x2,y2){
-        console.log('GAME GET: '+JSON.stringify(JSON.parse(obj['player1'])));
+        //console.log('GAME GET: '+JSON.stringify(JSON.parse(obj['player1'])));
     });
 
     nick='u'
@@ -124,7 +124,9 @@ function getState(socket) {
 function getGame(socket) {
     socket.emit('get_game',JSON.stringify({id:my_id}));
 }
-
+function keyboard_action(socket,code,value) {
+    socket.emit('handle',JSON.stringify({id:my_id,game_id:game.id,code:code,value:value}));
+}
 function gameInit(socket){
     canvas=document.querySelector('#canvas');
     ctx=canvas.getContext('2d');
@@ -137,8 +139,13 @@ function gameInit(socket){
         }
     });
 
-    $('#canvas').keypress(function (event) {
-       console.log("PRESSED "+event,which);
+    $(document).keydown(function (event) {
+        keyboard_action(socket,event.keyCode,1);
+        console.log("PRESSED "+event.keyCode);
+    });
+    $(document).keyup(function (event) {
+        keyboard_action(socket,event.keyCode,0);
+        console.log("KEYUP "+event.keyCode);
     });
 }
 
@@ -165,7 +172,7 @@ setInterval(function () {
             getState(socket);
         }
         if(game.gameState==2){
-            if(gameTimer>33){
+            if(gameTimer>16){
                 getGame(socket);
                 gameTimer=0;
             }

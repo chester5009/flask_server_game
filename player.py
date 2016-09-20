@@ -9,6 +9,7 @@ class Player():
         self.h=20
         self.place=place
         self.setCoordinates()
+        self.keys=[0]*1100
 
     def setCoordinates(self):
         if self.place==0:
@@ -19,13 +20,13 @@ class Player():
             self.y=400
 
     def update(self):
-        self.move(2)
+        self.move()
         pass
 
-    def move(self,dir): #0-left 1-left 2-right
-        if dir==1:
+    def move(self):
+        if (self.keys[65]==1):
             self.x-=2
-        elif dir==2:
+        if (self.keys[68] == 1):
             self.x+=2
 
     pass
