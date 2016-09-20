@@ -81,7 +81,12 @@ $(document).ready(function () {
         id=obj['id'];
 
         game.setId(id);
-        console.log('GAME GET: '+JSON.stringify(obj['id']));
+        obj_pl1=JSON.parse(obj['player1']);
+        obj_pl2=JSON.parse(obj['player2']);
+        game.refreshPlayers(obj_pl1['id'],obj_pl1['hp'],obj_pl1['x'],obj_pl1['y'],
+        obj_pl2['id'],obj_pl2['hp'],obj_pl2['x'],obj_pl2['y']);
+        //(id1,hp1,x1,y1,id2,hp2,x2,y2){
+        console.log('GAME GET: '+JSON.stringify(JSON.parse(obj['player1'])));
     });
 
     nick='u'
@@ -131,10 +136,47 @@ function gameInit(socket){
             changeState(socket,1);
         }
     });
+
+    $('#canvas').keypress(function (event) {
+       console.log("PRESSED "+event,which);
+    });
 }
 
 
-function update() {
+setInterval(function () {
+    timerPinger+=1;
+    timerGetUsers+=1;
+    if(timerGetUsers>500){
+        //console.log('getUSERs');
+        getUsers(socket);
+        timerGetUsers=0;
+    }
+    if(timerPinger>500){
+        //console.log('ping!');
+        imHere(socket);
+        timerPinger=0;
+    }
+
+
+    if(game!=null && list!=null){
+        game.render();
+        game.update(list['number'],usersWait,my_id);
+        if(game.gameState==1){
+            getState(socket);
+        }
+        if(game.gameState==2){
+            if(gameTimer>33){
+                getGame(socket);
+                gameTimer=0;
+            }
+            gameTimer+=1;
+        }
+
+
+    }
+},1);
+
+/*function update() {
     timerPinger+=1;
     timerGetUsers+=1;
     if(timerGetUsers>50){
@@ -167,6 +209,7 @@ function update() {
     }
     requestAnimationFrame(update);
 }
+*/
 
 /*setInterval(function () {
  timerPinger+=1;

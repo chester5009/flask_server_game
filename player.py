@@ -18,5 +18,14 @@ class Player():
             self.x=500
             self.y=400
 
+    def update(self):
+        self.move(2)
+        pass
+
+    def move(self,dir): #0-left 1-left 2-right
+        if dir==1:
+            self.x-=2
+        elif dir==2:
+            self.x+=2
 
     pass

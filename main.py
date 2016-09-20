@@ -199,6 +199,12 @@ def deleter():
         print 'DELETER WORK'
         time.sleep(8)
 
+def gamesUpdater():
+    while True:
+        for game in games:
+            game.run()
+            time.sleep(0.033)
+
 if __name__ == '__main__':
     import thread, time,threading
 
@@ -208,11 +214,13 @@ if __name__ == '__main__':
 
     sThread=threading.Thread(target=searcher)
     deleteThread = threading.Thread(target=deleter)
-
+    gamesUpdThread=threading.Thread(target=gamesUpdater)
     deleteThread.start()
     sThread.start()
+    gamesUpdThread.start()
 
     deleteThread.join()
     sThread.join()
+    gamesUpdThread.join()
 
 

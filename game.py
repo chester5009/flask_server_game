@@ -11,7 +11,9 @@ class Game():
         self.id = id
         pass
 
-    def run(cls):
+    def run(self):
+        for p in self.players:
+            p.update()
         pass
 
     pass

@@ -23,8 +23,8 @@ function Game(context,w,h){
     this.players=[];
 
     this.init=function () {
-        player1=new Player(0,0,0,0,0,0);
-        player2=new Player(0,0,0,0,0,0);
+        player1=new Player(0,0,10,10,30,30);
+        player2=new Player(0,0,50,50,30,30);
         this.players.push(player1);
         this.players.push(player2);
     };
@@ -54,6 +54,15 @@ function Game(context,w,h){
             ctx.fillText("Нашли соперника",40,250);
             ctx.fillText("ID игры: "+this.id,40,350);
 
+            ctx.fillStyle='#FF0000';
+            ctx.fillRect(this.players[0].x,this.players[0].y,this.players[0].w,this.players[0].h);
+            ctx.fillStyle='#00FF00';
+            ctx.fillRect(this.players[1].x,this.players[1].y,this.players[1].w,this.players[1].h);
+           /* сtx.fillStyle='#ff0000';
+            ctx.fillRect(this.players[0].x,this.players[0].y,this.players[0].w,this.players[0].h);
+
+            сtx.fillStyle='#00ff00';
+            ctx.fillRect(this.players[1].x,this.players[1].y,this.players[1].w,this.players[1].h);*/
         }
 
     };
@@ -61,7 +70,7 @@ function Game(context,w,h){
         this.myname=myname;
         this.number=number;
         this.uWait=uWait;
-        console.log('Game id :'+this.id);
+
     };
 
     this.setId=function (g) {
@@ -72,8 +81,15 @@ function Game(context,w,h){
         return this.id;
     };
 
-    this.refreshPlayers=function(){
-
+    this.refreshPlayers=function(id1,hp1,x1,y1,id2,hp2,x2,y2){
+        this.players[0].x=x1;
+        this.players[0].y=y1;
+        this.players[0].id=id1;
+        this.players[0].hp=hp1;
+        this.players[1].x=x2;
+        this.players[1].y=y2;
+        this.players[1].id=id2;
+        this.players[1].hp=hp2;
     }
 
     this.init();
