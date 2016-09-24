@@ -10,7 +10,7 @@ function Player(id,hp,x,y,w,h){
     this.y=y;
     this.w=w;
     this.h=h;
-
+    this.bullets=[];
 }
 
 function Game(context,w,h){
@@ -63,6 +63,17 @@ function Game(context,w,h){
 
             сtx.fillStyle='#00ff00';
             ctx.fillRect(this.players[1].x,this.players[1].y,this.players[1].w,this.players[1].h);*/
+           for (var i=0;i<this.players[0].bullets.length;i++){
+               var bullet=this.players[0].bullets[i];
+               ctx.fillStyle='#FF0000';
+               ctx.fillRect(bullet.x,bullet.y,bullet.w,bullet.h);
+           }
+
+           for (var i=0;i<this.players[1].bullets.length;i++){
+               var bullet=this.players[1].bullets[i];
+               ctx.fillStyle='#00FF00';
+               ctx.fillRect(bullet.x,bullet.y,bullet.w,bullet.h);
+           }
         }
 
     };
@@ -81,15 +92,18 @@ function Game(context,w,h){
         return this.id;
     };
 
-    this.refreshPlayers=function(id1,hp1,x1,y1,id2,hp2,x2,y2){
+    this.refreshPlayers=function(id1,hp1,x1,y1,bullets1,id2,hp2,x2,y2,bullets2){
         this.players[0].x=x1;
         this.players[0].y=y1;
         this.players[0].id=id1;
         this.players[0].hp=hp1;
+        this.players[0].bullets=bullets1;
+
         this.players[1].x=x2;
         this.players[1].y=y2;
         this.players[1].id=id2;
         this.players[1].hp=hp2;
+        this.players[1].bullets=bullets2;
     }
 
     this.init();

@@ -1,3 +1,5 @@
+from bullet import Bullet
+
 class Player():
 
     def __init__(self,id,place):
@@ -10,6 +12,7 @@ class Player():
         self.place=place
         self.setCoordinates()
         self.keys=[0]*1100
+        self.bullets=[]
 
     def setCoordinates(self):
         if self.place==0:
@@ -21,6 +24,12 @@ class Player():
 
     def update(self):
         self.move()
+        if self.keys[32]==1:
+            self.shotting()
+        for bullet in self.bullets:
+            bullet.update()
+            if bullet.isEnable==False:
+                self.bullets.remove(bullet)
         pass
 
     def move(self):
@@ -28,5 +37,9 @@ class Player():
             self.x-=2
         if (self.keys[68] == 1):
             self.x+=2
+
+    def shotting(self):
+        newBullet=Bullet(self.x,self.y,5,5,0,-7)
+        self.bullets.append(newBullet)
 
     pass

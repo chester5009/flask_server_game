@@ -96,7 +96,13 @@ def handle_get_game(data):
     uid=obj['id']
     game = getGameByUser(uid)
 
-    emit('get_game', json.dumps({'id':game.id,'player1':json.dumps(game.players[0].__dict__),'player2':json.dumps(game.players[1].__dict__)}))
+    emit('get_game', json.dumps({'id':game.id,
+                'player1':json.dumps({'id':game.players[0].id,'hp':game.players[0].hp,'x':game.players[0].x,'y':game.players[0].y}),
+                'player2':json.dumps({'id': game.players[1].id, 'hp': game.players[1].hp,'x': game.players[1].x, 'y': game.players[1].y}),
+                'bullets1':json.dumps([bul.__dict__ for bul in game.players[0].bullets]),
+                'bullets2':json.dumps([bul.__dict__ for bul in game.players[1].bullets]),
+                'count':json.dumps({'num1':len(game.players[0].bullets),'num2':len(game.players[1].bullets)})
+                                 }))
 
 @socketio.on('handle')
 def handle_handle(data):

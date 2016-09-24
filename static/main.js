@@ -83,10 +83,10 @@ $(document).ready(function () {
         game.setId(id);
         obj_pl1=JSON.parse(obj['player1']);
         obj_pl2=JSON.parse(obj['player2']);
-        game.refreshPlayers(obj_pl1['id'],obj_pl1['hp'],obj_pl1['x'],obj_pl1['y'],
-        obj_pl2['id'],obj_pl2['hp'],obj_pl2['x'],obj_pl2['y']);
+        game.refreshPlayers(obj_pl1['id'],obj_pl1['hp'],obj_pl1['x'],obj_pl1['y'],JSON.parse(obj['bullets1']),
+        obj_pl2['id'],obj_pl2['hp'],obj_pl2['x'],obj_pl2['y'],JSON.parse(obj['bullets2']));
         //(id1,hp1,x1,y1,id2,hp2,x2,y2){
-        //console.log('GAME GET: '+JSON.stringify(JSON.parse(obj['player1'])));
+        console.log('GAME GET: '+JSON.stringify(JSON.parse(obj['player1']))+JSON.stringify(JSON.parse(obj['bullets1'])));
     });
 
     nick='u'
