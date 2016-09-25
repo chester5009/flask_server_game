@@ -34,12 +34,12 @@ class Player():
 
     def move(self):
         if (self.keys[65]==1):
-            self.x-=2
+            self.x-=4
         if (self.keys[68] == 1):
-            self.x+=2
+            self.x+=4
 
     def shotting(self):
-        newBullet=Bullet(self.x,self.y,5,5,0,-7)
+        newBullet=Bullet(self.x,self.y,5,5,0,-14)
         self.bullets.append(newBullet)
 
     pass

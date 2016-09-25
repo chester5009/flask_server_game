@@ -21,6 +21,7 @@ function Game(context,w,h){
     this.uWait=0;
     this.id=null;
     this.players=[];
+    this.enemys=[];
 
     this.init=function () {
         player1=new Player(0,0,10,10,30,30);
@@ -49,11 +50,6 @@ function Game(context,w,h){
 
         }
         else if(this.gameState==2){
-            ctx.font="20px Impact";
-            ctx.fillStyle='#EEEE40';
-            ctx.fillText("Нашли соперника",40,250);
-            ctx.fillText("ID игры: "+this.id,40,350);
-
             ctx.fillStyle='#FF0000';
             ctx.fillRect(this.players[0].x,this.players[0].y,this.players[0].w,this.players[0].h);
             ctx.fillStyle='#00FF00';
@@ -63,17 +59,30 @@ function Game(context,w,h){
 
             сtx.fillStyle='#00ff00';
             ctx.fillRect(this.players[1].x,this.players[1].y,this.players[1].w,this.players[1].h);*/
-           for (var i=0;i<this.players[0].bullets.length;i++){
-               var bullet=this.players[0].bullets[i];
-               ctx.fillStyle='#FF0000';
-               ctx.fillRect(bullet.x,bullet.y,bullet.w,bullet.h);
-           }
+            for (var i=0;i<this.players[0].bullets.length;i++){
+                var bullet=this.players[0].bullets[i];
+                ctx.fillStyle='#FF0000';
+                ctx.fillRect(bullet.x,bullet.y,bullet.w,bullet.h);
+            }
 
-           for (var i=0;i<this.players[1].bullets.length;i++){
-               var bullet=this.players[1].bullets[i];
-               ctx.fillStyle='#00FF00';
-               ctx.fillRect(bullet.x,bullet.y,bullet.w,bullet.h);
-           }
+            for (var i=0;i<this.players[1].bullets.length;i++){
+                var bullet=this.players[1].bullets[i];
+                ctx.fillStyle='#00FF00';
+                ctx.fillRect(bullet.x,bullet.y,bullet.w,bullet.h);
+            }
+
+            for (var i=0;i<this.enemys.length;i++){
+                var enemy=this.enemys[i];
+                ctx.fillStyle='#A4A9F6';
+                ctx.fillRect(enemy.x,enemy.y,enemy.w,enemy.h);
+            }
+
+            ctx.font="20px Impact";
+            ctx.fillStyle='#EEEE40';
+            ctx.fillText("Нашли соперника",40,50);
+            ctx.fillText("ID игры: "+this.id,40,100);
+            ctx.fillText("Демо игры",40,150);
+            ctx.fillText("A <- D -> Space shot",40,200);
         }
 
     };
@@ -104,7 +113,11 @@ function Game(context,w,h){
         this.players[1].id=id2;
         this.players[1].hp=hp2;
         this.players[1].bullets=bullets2;
-    }
+    };
+    
+    this.refreshEmemys=function (enemys) {
+        this.enemys=enemys;
+    };
 
     this.init();
 }

@@ -8,6 +8,7 @@ var lastTime=0;
 var timerPinger=0;
 var timerGetUsers=0;
 var gameTimer=0;
+var updateTimer=0;
 
 var canvas,ctx;
 var game=null;
@@ -85,8 +86,9 @@ $(document).ready(function () {
         obj_pl2=JSON.parse(obj['player2']);
         game.refreshPlayers(obj_pl1['id'],obj_pl1['hp'],obj_pl1['x'],obj_pl1['y'],JSON.parse(obj['bullets1']),
         obj_pl2['id'],obj_pl2['hp'],obj_pl2['x'],obj_pl2['y'],JSON.parse(obj['bullets2']));
+        game.refreshEmemys(JSON.parse(obj['enemys']));
         //(id1,hp1,x1,y1,id2,hp2,x2,y2){
-        console.log('GAME GET: '+JSON.stringify(JSON.parse(obj['player1']))+JSON.stringify(JSON.parse(obj['bullets1'])));
+        console.log('GAME GET: '+JSON.stringify(JSON.parse(obj['player1']))+'Enemys: '+JSON.stringify(JSON.parse(obj['enemys'])));
     });
 
     nick='u'
@@ -166,8 +168,14 @@ setInterval(function () {
 
 
     if(game!=null && list!=null){
-        game.render();
-        game.update(list['number'],usersWait,my_id);
+        updateTimer++;
+        if(updateTimer>1000/60){
+            game.render();
+            game.update(list['number'],usersWait,my_id);
+            updateTimer=0;
+        }
+
+
         if(game.gameState==1){
             getState(socket);
         }
